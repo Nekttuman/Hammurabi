@@ -1,0 +1,5 @@
+
+class GameHistory {
+public:
+private:
+};
