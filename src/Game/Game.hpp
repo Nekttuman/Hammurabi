@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <print>
 
 #include "GameData.hpp"
@@ -9,42 +10,38 @@ using ui = UserInteraction;
 
 class Game {
 public:
-    Game() : gameState_{0, 100, 1000, 0, 2800} {}
+    Game() : gs_{gameStateDefaults} {}
 
-    void gameLoop() {
-        while (gameState_.round < RoundsCount_) {
-            ui::showGameStats(gameState_);
+    void gameLoop();
 
-            auto moveData = ui::getMoveData();
-            applyMove(moveData);
-            worldActions();
-            showGameState();
-
-            ++gameState_.round;
-        }
-    }
-
-    void applyMove(const MoveData& moveData) {}
+    [[__nodiscard__]] bool tryToApplyMove();
 
     void worldActions() {
         harvest();
         rats();
+        feeding();
+        populationIncrease();
+        epidemic();
     }
 
-    void showGameState() {}
-
-    bool isDefeat() {
-        // TODO
-        return false;
-    }
+    void defeat();
+    void getValidMove();
 
 private:
     void harvest();
     void rats();
+    void feeding();
+    void populationIncrease();
+    void epidemic();
+
+    void generateAcrePrice();
 
 private:
-    GameState gameState_;
-    const int RoundsCount_ = 10;
+    GameState gs_;
+    bool defeat_ = false;
+    WorldActionsStats ws_;
+    MoveData move_;
+    std::string userName_;
 
 private:
     //! helper
